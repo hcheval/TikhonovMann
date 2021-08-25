@@ -5,6 +5,8 @@ import data.real.basic
 
 open lean lean.parser tactic interactive interactive.types expr
 
+-- specialize_all tactic, written and posted by Yakov Pechersky on Zulip
+
 meta def tactic.specialize_single (n : name) (l : loc) : tactic unit := do
   val ← get_local n,
   valt ← infer_type val,
