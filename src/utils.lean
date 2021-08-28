@@ -2,6 +2,7 @@ import data.list
 import tactic.basic
 import data.finset.basic
 import data.real.basic
+import tactic
 
 open lean lean.parser tactic interactive interactive.types expr
 
@@ -77,7 +78,7 @@ lemma mul_sides_left (a b c : ℝ) (h₁ : 0 ≤ a) (h₂ : 0 ≤ c) : a ≤ b �
 open_locale big_operators 
 open finset (range)
 
-lemma nonneg_sub_of_nonneg_sum (x : ℕ → ℝ) (n j : ℕ) (x_nonneg : ∀ i, 0 ≤ x i)
+lemma nonneg_sub_of_nonneg_sum {x : ℕ → ℝ} {n j : ℕ} (x_nonneg : ∀ i, 0 ≤ x i)
   : 0 ≤ (∑ i in finset.range (n + j), (x i)) - (∑ i in finset.range n, (x i)) :=
 begin 
   have h₁ : range n ≤ range (n + j) := finset.range_mono le_self_add,
@@ -89,6 +90,22 @@ begin
   },
   exact sub_nonneg.mpr this,
 end
+
+lemma le_Ico_of_le_left {a b : ℕ} (c : ℕ) (h : a ≤ b) : finset.Ico b c ≤ finset.Ico a c :=
+begin
+  simp only [has_subset.subset, and_imp, finset.le_eq_subset, finset.Ico.mem],
+  intros x h₁ h₂,
+  exact and.intro (le_trans h h₁) h₂,
+end
+
+lemma some_ineq {a n : ℕ} (m : ℕ) (h : a ≤ n) : a.succ ≤ n + m + 1 := by {
+  have h₁ : a + 1 ≤ n + 1 := add_le_add_right h 1,
+  have h₂ : n + 1 ≤ n + m + 1 := by {
+    rw [add_comm n m, add_assoc],
+    exact le_add_self,
+  },
+  exact le_trans h₁ h₂,
+}
 
 lemma helper (a b c : ℝ) : a * b ≤ c → b ≤ (1 / a) * c := by {
   intros h,
